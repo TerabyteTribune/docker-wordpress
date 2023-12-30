@@ -56,13 +56,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build multi-arch image and push latest tag
+      - name: Build multi-arch image and push commit tag
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'schedule')
         run: |-
           docker buildx build \
             --cache-from=$IMAGE_NAME:latest \
             --push \
-            -t $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:$IMAGE_TAG
+            -t $IMAGE_NAME:main \
             --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 \
             .
 
@@ -77,5 +78,6 @@ jobs:
             --cache-from=$IMAGE_NAME:latest \
             --push \
             -t $IMAGE_NAME:$RELEASE_VERSION \
+            -t $IMAGE_NAME:latest \
             --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 \
             .
