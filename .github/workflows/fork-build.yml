@@ -62,8 +62,8 @@ jobs:
           docker buildx build \
             --cache-from=$IMAGE_NAME:latest \
             --push \
-            -t $IMAGE_NAME:$IMAGE_TAG
-            -t $IMAGE_NAME:main \
+            -t $IMAGE_NAME:$IMAGE_TAG \
+            -t $IMAGE_NAME:trunk \
             --platform linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 \
             .
 
