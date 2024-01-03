@@ -10,9 +10,8 @@ if [ ! "$(ls -A "/var/www/wp-content" 2>/dev/null)" ]; then
     cp -r /usr/src/wordpress/wp-content /var/www/
     chown -R nobody.nobody /var/www
 fi
-
-# Check if wp-secrets.php is a placeholder file
-if grep -q "This is a placeholder file." /usr/src/wordpress/wp-secrets.php; then
+# Check if wp-secrets.php exists
+if ! [ -f "/var/www/wp-content/wp-secrets.php" ]; then
     # Check that secrets environment variables are not set
     if [ ! $AUTH_KEY ] \
     && [ ! $SECURE_AUTH_KEY ] \
@@ -24,7 +23,8 @@ if grep -q "This is a placeholder file." /usr/src/wordpress/wp-secrets.php; then
     && [ ! $NONCE_SALT ]; then
         echo "Generating wp-secrets.php"
         # Generate secrets
-        curl -f https://api.wordpress.org/secret-key/1.1/salt/ >> /usr/src/wordpress/wp-secrets.php
+        echo '<?php' > /var/www/wp-content/wp-secrets.php
+        curl -f https://api.wordpress.org/secret-key/1.1/salt/ >> /var/www/wp-content/wp-secrets.php
     fi
 fi
 exec "$@"
